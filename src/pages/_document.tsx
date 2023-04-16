@@ -1,26 +1,44 @@
 import React from "react";
 import Document, {
   Html,
-  Head,
   Main,
   NextScript,
   DocumentContext,
 } from "next/document";
-import { CssBaseline } from "@nextui-org/react";
+import { getServerTranslations } from "@/lib/i18n/getServerTranslation";
+import { createStylesServer, ServerStyles } from "@mantine/next";
+import { Head } from "next/document";
+import nextI18NextConfig from "../../next-i18next.config";
 
-class MyDocument extends Document {
+const stylesServer = createStylesServer();
+
+export default class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
     const initialProps = await Document.getInitialProps(ctx);
     return {
       ...initialProps,
-      styles: React.Children.toArray([initialProps.styles]),
+      ...(await getServerTranslations(
+        ctx.locale ?? "ja",
+        ["common"],
+        nextI18NextConfig
+      )),
+      styles: [
+        initialProps.styles,
+        <ServerStyles
+          html={initialProps.html}
+          server={stylesServer}
+          key="styles"
+        />,
+      ],
     };
   }
 
   render(): JSX.Element {
     return (
       <Html lang="en">
-        <Head>{CssBaseline.flush()}</Head>
+        <Head>
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
         <body>
           <Main />
           <NextScript />
@@ -29,5 +47,3 @@ class MyDocument extends Document {
     );
   }
 }
-
-export default MyDocument;
