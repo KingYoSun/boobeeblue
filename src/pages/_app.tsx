@@ -1,31 +1,31 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { appWithTranslation } from "next-i18next";
-import { useState } from "react";
-import {
-  MantineProvider,
-  ColorSchemeProvider,
-  ColorScheme,
-} from "@mantine/core";
 import Head from "next/head";
 import nextI18NextConfig from "../../next-i18next.config";
 import Layout from "@/components/Layout/Layout";
+import { createTheme, NextUIProvider } from "@nextui-org/react";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 function App({ Component, pageProps }: AppProps) {
-  const [colorScheme, setColorScheme] = useState<ColorScheme>("light");
-  const toggleColorScheme = (value?: ColorScheme) =>
-    setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
+  const lightTheme = createTheme({
+    type: "light",
+  });
+
+  const darkTheme = createTheme({
+    type: "dark",
+  });
 
   return (
-    <ColorSchemeProvider
-      colorScheme={colorScheme}
-      toggleColorScheme={toggleColorScheme}
+    <NextThemesProvider
+      defaultTheme="system"
+      attribute="class"
+      value={{
+        light: lightTheme.className,
+        dark: darkTheme.className,
+      }}
     >
-      <MantineProvider
-        theme={{ colorScheme }}
-        withGlobalStyles
-        withNormalizeCSS
-      >
+      <NextUIProvider>
         <Head>
           <title>boobee.blue</title>
           <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -34,8 +34,8 @@ function App({ Component, pageProps }: AppProps) {
         <Layout>
           <Component {...pageProps} />
         </Layout>
-      </MantineProvider>
-    </ColorSchemeProvider>
+      </NextUIProvider>
+    </NextThemesProvider>
   );
 }
 

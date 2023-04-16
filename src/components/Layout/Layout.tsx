@@ -1,4 +1,4 @@
-import Header from "./Header";
+import Navbar from "./Navbar";
 import { ReactNode } from "react";
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
 export default function Layout({ children }: Props) {
   return (
     <>
-      <Header />
+      <Navbar />
       <main>{children}</main>
     </>
   );

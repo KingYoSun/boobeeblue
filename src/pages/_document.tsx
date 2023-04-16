@@ -2,15 +2,13 @@ import React from "react";
 import Document, {
   Html,
   Main,
+  Head,
   NextScript,
   DocumentContext,
 } from "next/document";
 import { getServerTranslations } from "@/lib/i18n/getServerTranslation";
-import { createStylesServer, ServerStyles } from "@mantine/next";
-import { Head } from "next/document";
 import nextI18NextConfig from "../../next-i18next.config";
-
-const stylesServer = createStylesServer();
+import { CssBaseline } from "@nextui-org/react";
 
 export default class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
@@ -22,21 +20,15 @@ export default class MyDocument extends Document {
         ["common"],
         nextI18NextConfig
       )),
-      styles: [
-        initialProps.styles,
-        <ServerStyles
-          html={initialProps.html}
-          server={stylesServer}
-          key="styles"
-        />,
-      ],
+      styles: React.Children.toArray([initialProps.styles]),
     };
   }
 
   render(): JSX.Element {
     return (
-      <Html lang="en">
+      <Html lang="ja">
         <Head>
+          {CssBaseline.flush()}
           <link rel="icon" href="/favicon.ico" />
         </Head>
         <body>
