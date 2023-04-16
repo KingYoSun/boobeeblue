@@ -1,5 +1,5 @@
 import { useTranslation } from "next-i18next";
-import { GrHomeRounded } from "react-icons/gr";
+import { GrNotification } from "react-icons/gr";
 import RowBox from "../RowBox";
 import { Text, createStyles } from "@mantine/core";
 
@@ -16,16 +16,16 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export default function NavHome() {
+export default function NavNotifications() {
   const { t } = useTranslation("common");
 
   const { classes } = useStyles();
 
   return (
     <RowBox className={classes.box}>
-      <GrHomeRounded size={20} />
+      <GrNotification size={20} />
       <Text size={20} weight="bold" className={classes.text}>
-        {t("Navigation.home")}
+        {t("Navigation.notifications")}
       </Text>
     </RowBox>
   );

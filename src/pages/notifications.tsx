@@ -3,9 +3,10 @@ import styles from "@/styles/Home.module.css";
 import { GetStaticProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
-export default function Page() {
+export default function Notifications() {
   return (
     <>
+      Notifications
       <div className={styles.center}>
         <Image
           className={styles.logo}

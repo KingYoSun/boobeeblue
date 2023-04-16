@@ -1,9 +1,10 @@
 import MainLogo from "../MainLogo";
 import NavHome from "../navigations/Home";
+import NavNotifications from "../navigations/Notifications";
 import { ReactNode, useState } from "react";
 import { createStyles, Header, Container, Group, Text } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
 import RowBox from "../RowBox";
+import { useRouter } from "next/router";
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -13,14 +14,16 @@ const useStyles = createStyles((theme) => ({
     height: "100%",
   },
 
-  links: {
-    [theme.fn.smallerThan("xs")]: {
-      display: "none",
-    },
-  },
+  links: {},
 
+  link: {
+    marginLeft: theme.spacing.sm,
+    marginRight: theme.spacing.sm,
+    borderRadius: theme.radius.sm,
+  },
   linkActive: {
     "&, &:hover": {
+      paddingLeft: 4,
       backgroundColor: theme.fn.variant({
         variant: "light",
         color: theme.primaryColor,
@@ -29,6 +32,8 @@ const useStyles = createStyles((theme) => ({
         .color,
     },
   },
+
+  rowBox: {},
 
   textTop: {
     marginTop: 5,
@@ -49,21 +54,29 @@ interface HeaderLink {
 }
 
 export default function NavHeader() {
+  const router = useRouter();
   const links: HeaderLink[] = [
     { link: "/", label: "home", component: <NavHome /> },
+    {
+      link: "/notifications",
+      label: "notifications",
+      component: <NavNotifications />,
+    },
   ];
-  const [opened, { toggle }] = useDisclosure(false);
-  const [active, setActive] = useState(links[0]);
+  const [active, setActive] = useState(links[0].link);
   const { classes, cx } = useStyles();
 
   const items = links.map((link) => (
     <a
       key={link.label}
       href={link.link}
-      className={cx({ [classes.linkActive]: active === link })}
+      className={cx(classes.link, {
+        [classes.linkActive]: active === link.link,
+      })}
       onClick={(event) => {
         event.preventDefault();
-        setActive(link);
+        setActive(link.link);
+        router.push(link.link);
       }}
     >
       {link.component}
@@ -73,7 +86,7 @@ export default function NavHeader() {
   return (
     <Header height={60} mb={60}>
       <Container className={classes.header}>
-        <RowBox>
+        <RowBox className={classes.rowBox}>
           <MainLogo />
           <div style={{ marginLeft: 5 }}>
             <Text
