@@ -1,6 +1,9 @@
 {
   "Navigation": {
     "home": "ホーム",
-    "notifications": "通知"
+    "notifications": "通知",
+    "search": "検索",
+    "profile": "プロフィール",
+    "settings": "設定"
   }
 }

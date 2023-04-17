@@ -1,6 +1,9 @@
 {
   "Navigation": {
-    "home": "HOME",
-    "notifications": "Notifications"
+    "home": "Home",
+    "notifications": "Notifications",
+    "search": "Search",
+    "profile": "Profile",
+    "settings": "Setting"
   }
 }

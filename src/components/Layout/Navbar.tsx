@@ -1,10 +1,13 @@
 import ThemeSwitch from "../ThemeSwitch";
 import NavHome from "../navigations/Home";
 import NavNotifications from "../navigations/Notifications";
-import { Navbar, Text, useTheme } from "@nextui-org/react";
+import { Navbar, useTheme } from "@nextui-org/react";
 import { useRouter } from "next/router";
 import { ReactNode, useState } from "react";
 import BooBee from "../BooBee";
+import NavSearch from "../navigations/Search";
+import NavProfile from "../navigations/Profile";
+import NavSettings from "../navigations/Settings";
 
 interface NavbarLink {
   link: string;
@@ -16,9 +19,24 @@ export default function MyNavbar() {
   const links: NavbarLink[] = [
     { link: "/", label: "home", component: <NavHome /> },
     {
+      link: "/search",
+      label: "search",
+      component: <NavSearch />,
+    },
+    {
       link: "/notifications",
       label: "notifications",
       component: <NavNotifications />,
+    },
+    {
+      link: "/profile",
+      label: "profile",
+      component: <NavProfile />,
+    },
+    {
+      link: "/settings",
+      label: "settings",
+      component: <NavSettings />,
     },
   ];
 
@@ -36,6 +54,11 @@ export default function MyNavbar() {
         enableCursorHighlight
         activeColor="secondary"
         variant="underline"
+        style={{
+          paddingLeft: 10,
+          paddingRight: 10,
+        }}
+        gap={9}
       >
         {links.map((link) => (
           <Navbar.Item

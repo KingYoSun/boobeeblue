@@ -3,10 +3,13 @@ import NavHome from "../navigations/Home";
 import NavNotifications from "../navigations/Notifications";
 import { Row, Spacer, useTheme } from "@nextui-org/react";
 import { useRouter } from "next/router";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
 import BooBee from "../BooBee";
 import HorizonalBorder from "../HorizonalBorder";
+import NavSearch from "../navigations/Search";
+import NavProfile from "../navigations/Profile";
+import NavSettings from "../navigations/Settings";
 
 interface SidebarLink {
   link: string;
@@ -22,15 +25,31 @@ export default function MySidebar({ height }: Props) {
   const links: SidebarLink[] = [
     { link: "/", label: "home", component: <NavHome /> },
     {
+      link: "/search",
+      label: "search",
+      component: <NavSearch />,
+    },
+    {
       link: "/notifications",
       label: "notifications",
       component: <NavNotifications />,
+    },
+    {
+      link: "/profile",
+      label: "profile",
+      component: <NavProfile />,
+    },
+    {
+      link: "/settings",
+      label: "settings",
+      component: <NavSettings />,
     },
   ];
 
   const { theme, isDark } = useTheme();
   const router = useRouter();
-  const [active, setActive] = useState(links[0].link);
+  const activeLink = links.find((link) => link.link == router.asPath);
+  const [active, setActive] = useState(activeLink?.link ?? links[0].link);
 
   return (
     <div style={{ display: "flex", height: "100%", direction: "ltr" }}>
@@ -49,7 +68,15 @@ export default function MySidebar({ height }: Props) {
         </Row>
         <Spacer y={0.5} />
         <HorizonalBorder />
-        <Menu>
+        <Menu
+          menuItemStyles={{
+            button: {
+              "&:hover": {
+                backgroundColor: theme?.colors.gray200.value,
+              },
+            },
+          }}
+        >
           {links.map((link) => (
             <MenuItem
               key={link.label}
@@ -59,6 +86,12 @@ export default function MySidebar({ height }: Props) {
                 router.push(link.link);
               }}
               active={active == link.link}
+              rootStyles={{
+                backgroundColor:
+                  active == link.link
+                    ? theme?.colors.gray100.value
+                    : theme?.colors.background.value,
+              }}
             >
               {link.component}
             </MenuItem>
