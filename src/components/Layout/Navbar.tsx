@@ -26,7 +26,7 @@ export default function MyNavbar() {
   const [active, setActive] = useState(links[0].link);
 
   return (
-    <Navbar isBordered variant="floating">
+    <Navbar variant="floating">
       <Navbar.Brand>
         <MainLogo />
         <div style={{ marginLeft: 5 }}>
