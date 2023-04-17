@@ -2,7 +2,7 @@ import MainLogo from "../MainLogo";
 import ThemeSwitch from "../ThemeSwitch";
 import NavHome from "../navigations/Home";
 import NavNotifications from "../navigations/Notifications";
-import { Navbar, Text } from "@nextui-org/react";
+import { Navbar, Text, useTheme } from "@nextui-org/react";
 import { useRouter } from "next/router";
 import { ReactNode, useState } from "react";
 
@@ -22,11 +22,12 @@ export default function MyNavbar() {
     },
   ];
 
+  const { isDark } = useTheme();
   const router = useRouter();
   const [active, setActive] = useState(links[0].link);
 
   return (
-    <Navbar variant="floating">
+    <Navbar isBordered={isDark} variant="floating">
       <Navbar.Brand>
         <MainLogo />
         <div style={{ marginLeft: 5 }}>
@@ -65,7 +66,11 @@ export default function MyNavbar() {
           </Text>
         </div>
       </Navbar.Brand>
-      <Navbar.Content enableCursorHighlight variant="underline">
+      <Navbar.Content
+        enableCursorHighlight
+        activeColor="secondary"
+        variant="underline"
+      >
         {links.map((link) => (
           <Navbar.Item
             key={link.label}
