@@ -1,3 +1,4 @@
+import { Container } from "@nextui-org/react";
 import Navbar from "./Navbar";
 import { ReactNode } from "react";
 
@@ -9,7 +10,9 @@ export default function Layout({ children }: Props) {
   return (
     <>
       <Navbar />
-      <main>{children}</main>
+      <main>
+        <Container>{children}</Container>
+      </main>
     </>
   );
 }
