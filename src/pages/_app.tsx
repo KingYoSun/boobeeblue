@@ -6,6 +6,7 @@ import Layout from "@/components/Layout/Layout";
 import { createTheme, NextUIProvider, useTheme } from "@nextui-org/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { IconContext } from "react-icons";
+import { ProSidebarProvider } from "react-pro-sidebar";
 
 function App({ Component, pageProps }: AppProps) {
   const lightTheme = createTheme({
@@ -39,9 +40,11 @@ function App({ Component, pageProps }: AppProps) {
             size: theme?.fontSizes["2xl"].value,
           }}
         >
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
+          <ProSidebarProvider>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </ProSidebarProvider>
         </IconContext.Provider>
       </NextUIProvider>
     </NextThemesProvider>

@@ -1,10 +1,10 @@
-import MainLogo from "../MainLogo";
 import ThemeSwitch from "../ThemeSwitch";
 import NavHome from "../navigations/Home";
 import NavNotifications from "../navigations/Notifications";
 import { Navbar, Text, useTheme } from "@nextui-org/react";
 import { useRouter } from "next/router";
 import { ReactNode, useState } from "react";
+import BooBee from "../BooBee";
 
 interface NavbarLink {
   link: string;
@@ -30,42 +30,7 @@ export default function MyNavbar() {
   return (
     <Navbar isBordered={isDark} variant="floating">
       <Navbar.Brand>
-        <MainLogo />
-        <div style={{ marginLeft: 5 }}>
-          <Text
-            h1
-            size={22}
-            weight="bold"
-            css={{
-              textGradient: "45deg, $purple600 -20%, $pink600 100%",
-              marginBottom: -15,
-            }}
-          >
-            boo
-          </Text>
-          <Text
-            h1
-            size={22}
-            weight="bold"
-            css={{
-              textGradient: "45deg, $yellow600 -20%, $red600 100%",
-              marginTop: -15,
-              marginBottom: -15,
-            }}
-          >
-            bee.
-          </Text>
-          <Text
-            size={22}
-            weight="bold"
-            css={{
-              textGradient: "45deg, $blue600 -20%, $pink600 50%",
-              marginTop: -15,
-            }}
-          >
-            blue
-          </Text>
-        </div>
+        <BooBee />
       </Navbar.Brand>
       <Navbar.Content
         enableCursorHighlight
