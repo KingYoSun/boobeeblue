@@ -1,6 +1,7 @@
 import { useTheme as useNextTheme } from "next-themes";
 import { Switch, useTheme } from "@nextui-org/react";
 import { useEffect, useState } from "react";
+import { MdDarkMode, MdSunny } from "react-icons/md";
 
 const ThemeSwitch = () => {
   const [mounted, setMounted] = useState(false);
@@ -18,8 +19,11 @@ const ThemeSwitch = () => {
 
   return (
     <Switch
+      shadow
       checked={isDark}
+      size="xl"
       onChange={(e) => setTheme(e.target.checked ? "dark" : "light")}
+      icon={isDark ? <MdDarkMode /> : <MdSunny />}
     />
   );
 };
