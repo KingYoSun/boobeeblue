@@ -26,6 +26,7 @@ export default function MyNavbar() {
   const router = useRouter();
   const [active, setActive] = useState(links[0].link);
 
+  // variant="floating" cause Hydration error
   return (
     <Navbar isBordered={isDark} variant="floating">
       <Navbar.Brand>
