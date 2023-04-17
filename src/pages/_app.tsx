@@ -11,10 +11,22 @@ import { ProSidebarProvider } from "react-pro-sidebar";
 function App({ Component, pageProps }: AppProps) {
   const lightTheme = createTheme({
     type: "light",
+    theme: {
+      colors: {
+        background: "#fff",
+        text: "#1d1d1d",
+      },
+    },
   });
 
   const darkTheme = createTheme({
     type: "dark",
+    theme: {
+      colors: {
+        background: "#1d1d1d",
+        text: "#fff",
+      },
+    },
   });
 
   const { theme } = useTheme();
