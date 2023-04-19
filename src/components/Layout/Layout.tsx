@@ -30,7 +30,12 @@ export default function Layout({ children }: Props) {
       {width >= 900 ? <MySidebar height={height} /> : null}
       <main style={{ width: width }}>
         {width < 900 ? <Navbar /> : null}
-        <Container>{children}</Container>
+        <Container
+          justify="center"
+          css={{ paddingTop: "$lg", paddingBottom: "$xl" }}
+        >
+          {children}
+        </Container>
       </main>
     </Row>
   );

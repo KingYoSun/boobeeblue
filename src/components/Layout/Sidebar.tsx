@@ -15,6 +15,7 @@ interface SidebarLink {
   link: string;
   label: string;
   component: ReactNode;
+  disabled: boolean;
 }
 
 interface Props {
@@ -23,26 +24,30 @@ interface Props {
 
 export default function MySidebar({ height }: Props) {
   const links: SidebarLink[] = [
-    { link: "/", label: "home", component: <NavHome /> },
+    { link: "/", label: "home", component: <NavHome />, disabled: false },
     {
       link: "/search",
       label: "search",
       component: <NavSearch />,
+      disabled: true,
     },
     {
       link: "/notifications",
       label: "notifications",
       component: <NavNotifications />,
+      disabled: true,
     },
     {
       link: "/profile",
       label: "profile",
       component: <NavProfile />,
+      disabled: true,
     },
     {
       link: "/settings",
       label: "settings",
       component: <NavSettings />,
+      disabled: true,
     },
   ];
 
@@ -77,25 +82,28 @@ export default function MySidebar({ height }: Props) {
             },
           }}
         >
-          {links.map((link) => (
-            <MenuItem
-              key={link.label}
-              onClick={(e) => {
-                e.preventDefault;
-                setActive(link.link);
-                router.push(link.link);
-              }}
-              active={active == link.link}
-              rootStyles={{
-                backgroundColor:
-                  active == link.link
-                    ? theme?.colors.gray100.value
-                    : theme?.colors.background.value,
-              }}
-            >
-              {link.component}
-            </MenuItem>
-          ))}
+          {links.map(
+            (link) =>
+              !link.disabled && (
+                <MenuItem
+                  key={link.label}
+                  onClick={(e) => {
+                    e.preventDefault;
+                    setActive(link.link);
+                    router.push(link.link);
+                  }}
+                  active={active == link.link}
+                  rootStyles={{
+                    backgroundColor:
+                      active == link.link
+                        ? theme?.colors.gray100.value
+                        : theme?.colors.background.value,
+                  }}
+                >
+                  {link.component}
+                </MenuItem>
+              )
+          )}
         </Menu>
         <Row justify="flex-end" style={{ paddingRight: 10 }}>
           <ThemeSwitch />

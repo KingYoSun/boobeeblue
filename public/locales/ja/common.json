@@ -5,5 +5,12 @@
     "search": "検索",
     "profile": "プロフィール",
     "settings": "設定"
+  },
+  "Search": {
+    "inputPlaceholder": "検索キーワードを入力...",
+    "Errors": {
+      "error": "エラー！",
+      "bgsHostNotExist": "BGSサーバーが指定されていません"
+    }
   }
 }

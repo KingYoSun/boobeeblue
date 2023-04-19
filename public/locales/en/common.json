@@ -5,5 +5,12 @@
     "search": "Search",
     "profile": "Profile",
     "settings": "Setting"
+  },
+  "Search": {
+    "inputPlaceholder": "Type search keyword...",
+    "Errors": {
+      "error": "Error!",
+      "bgsHostNotExist": "BGS server is not configured"
+    }
   }
 }

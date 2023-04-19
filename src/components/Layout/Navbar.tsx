@@ -13,30 +13,35 @@ interface NavbarLink {
   link: string;
   label: string;
   component: ReactNode;
+  disabled: boolean;
 }
 
 export default function MyNavbar() {
   const links: NavbarLink[] = [
-    { link: "/", label: "home", component: <NavHome /> },
+    { link: "/", label: "home", component: <NavHome />, disabled: false },
     {
       link: "/search",
       label: "search",
       component: <NavSearch />,
+      disabled: true,
     },
     {
       link: "/notifications",
       label: "notifications",
       component: <NavNotifications />,
+      disabled: true,
     },
     {
       link: "/profile",
       label: "profile",
       component: <NavProfile />,
+      disabled: true,
     },
     {
       link: "/settings",
       label: "settings",
       component: <NavSettings />,
+      disabled: true,
     },
   ];
 
@@ -60,24 +65,27 @@ export default function MyNavbar() {
         }}
         gap={9}
       >
-        {links.map((link) => (
-          <Navbar.Item
-            key={link.label}
-            isActive={link.link == active}
-            css={{
-              "&:hover": {
-                cursor: "pointer",
-              },
-            }}
-            onClick={(e) => {
-              e.preventDefault;
-              setActive(link.link);
-              router.push(link.link);
-            }}
-          >
-            {link.component}
-          </Navbar.Item>
-        ))}
+        {links.map(
+          (link) =>
+            !link.disabled && (
+              <Navbar.Item
+                key={link.label}
+                isActive={link.link == active}
+                css={{
+                  "&:hover": {
+                    cursor: "pointer",
+                  },
+                }}
+                onClick={(e) => {
+                  e.preventDefault;
+                  setActive(link.link);
+                  router.push(link.link);
+                }}
+              >
+                {link.component}
+              </Navbar.Item>
+            )
+        )}
       </Navbar.Content>
       <Navbar.Content>
         <ThemeSwitch />
