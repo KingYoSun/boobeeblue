@@ -23,14 +23,17 @@ export default function MySearchInput({
       <Row justify="center" css={{ marginTop: "$12" }}>
         <Input
           id="searchInput"
-          value={value}
+          initialValue={value}
           clearable
           bordered
           color="primary"
           width="100%"
           labelPlaceholder={`${t("Search.inputPlaceholder")}`}
           contentRight={loadingFlg ? <Loading /> : <MdSearch />}
-          onChange={(e) => onChangeSearch(e)}
+          onChange={(e) => {
+            e.preventDefault();
+            onChangeSearch(e);
+          }}
           onKeyPress={(e) => {
             if (e.key == "Enter") {
               e.preventDefault();

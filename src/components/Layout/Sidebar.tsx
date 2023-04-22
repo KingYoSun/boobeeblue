@@ -3,8 +3,8 @@ import NavHome from "../navigations/Home";
 import NavNotifications from "../navigations/Notifications";
 import { Row, Spacer, useTheme } from "@nextui-org/react";
 import { useRouter } from "next/router";
-import { ReactNode, useEffect, useState } from "react";
-import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
+import { ReactNode, useState } from "react";
+import { Sidebar, Menu, MenuItem, sidebarClasses } from "react-pro-sidebar";
 import BooBee from "../BooBee";
 import HorizonalBorder from "../HorizonalBorder";
 import NavSearch from "../navigations/Search";
@@ -18,11 +18,7 @@ interface SidebarLink {
   disabled: boolean;
 }
 
-interface Props {
-  height: number;
-}
-
-export default function MySidebar({ height }: Props) {
+export default function MySidebar() {
   const links: SidebarLink[] = [
     { link: "/", label: "home", component: <NavHome />, disabled: false },
     {
@@ -57,58 +53,59 @@ export default function MySidebar({ height }: Props) {
   const [active, setActive] = useState(activeLink?.link ?? links[0].link);
 
   return (
-    <div style={{ display: "flex", height: "100%", direction: "ltr" }}>
-      <Sidebar
-        backgroundColor={theme?.colors.background.value}
-        rootStyles={{
-          borderRightStyle: "none",
-          boxShadow: isDark
-            ? "0 12px 25px 8px rgb(255 255 255 / 0.2)"
-            : "0 12px 25px 8px rgb(104 112 118 / 0.2)",
+    <Sidebar
+      backgroundColor={theme?.colors.background.value}
+      rootStyles={{
+        [`.${sidebarClasses.container}`]: {
+          height: "100vh !important",
+        },
+        borderRightStyle: "none",
+        boxShadow: isDark
+          ? "0 12px 25px 8px rgb(255 255 255 / 0.2)"
+          : "0 12px 25px 8px rgb(104 112 118 / 0.2)",
+      }}
+    >
+      <Spacer y={0.5} />
+      <Row justify="flex-start" align="center" style={{ paddingLeft: 40 }}>
+        <BooBee />
+      </Row>
+      <Spacer y={0.5} />
+      <HorizonalBorder />
+      <Menu
+        menuItemStyles={{
+          button: {
+            "&:hover": {
+              backgroundColor: theme?.colors.gray200.value,
+            },
+          },
         }}
       >
-        <Spacer y={0.5} />
-        <Row justify="flex-start" align="center" style={{ paddingLeft: 40 }}>
-          <BooBee />
-        </Row>
-        <Spacer y={0.5} />
-        <HorizonalBorder />
-        <Menu
-          menuItemStyles={{
-            button: {
-              "&:hover": {
-                backgroundColor: theme?.colors.gray200.value,
-              },
-            },
-          }}
-        >
-          {links.map(
-            (link) =>
-              !link.disabled && (
-                <MenuItem
-                  key={link.label}
-                  onClick={(e) => {
-                    e.preventDefault;
-                    setActive(link.link);
-                    router.push(link.link);
-                  }}
-                  active={active == link.link}
-                  rootStyles={{
-                    backgroundColor:
-                      active == link.link
-                        ? theme?.colors.gray100.value
-                        : theme?.colors.background.value,
-                  }}
-                >
-                  {link.component}
-                </MenuItem>
-              )
-          )}
-        </Menu>
-        <Row justify="flex-end" style={{ paddingRight: 10 }}>
-          <ThemeSwitch />
-        </Row>
-      </Sidebar>
-    </div>
+        {links.map(
+          (link) =>
+            !link.disabled && (
+              <MenuItem
+                key={link.label}
+                onClick={(e) => {
+                  e.preventDefault;
+                  setActive(link.link);
+                  router.push(link.link);
+                }}
+                active={active == link.link}
+                rootStyles={{
+                  backgroundColor:
+                    active == link.link
+                      ? theme?.colors.gray100.value
+                      : theme?.colors.background.value,
+                }}
+              >
+                {link.component}
+              </MenuItem>
+            )
+        )}
+      </Menu>
+      <Row justify="flex-end" style={{ paddingRight: 10 }}>
+        <ThemeSwitch />
+      </Row>
+    </Sidebar>
   );
 }

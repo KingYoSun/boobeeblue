@@ -1,14 +1,46 @@
 import { GetStaticProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import MySearchInput from "@/components/SearchInput";
-import React, { useCallback, useEffect, useState } from "react";
-import { FormElement } from "@nextui-org/react";
+import React, { useCallback, useEffect, useReducer, useState } from "react";
+import { FormElement, Grid, Spacer } from "@nextui-org/react";
 import useSWR from "swr";
 import axios, { AxiosRequestConfig } from "axios";
 import { useTranslation } from "next-i18next";
+import SearchResultComp, { SearchResult } from "@/components/SearchResult";
+
+type Action = {
+  type: "set" | "addOld" | "addNew" | "remove" | "reset";
+  payload: Array<SearchResult>;
+};
 
 export default function Page() {
   const { t } = useTranslation("common");
+
+  const reducer = (state: Array<SearchResult>, action: Action) => {
+    switch (action?.type) {
+      case "set":
+        return action.payload;
+      case "addOld":
+        const addArrOld = action.payload.filter(
+          (item) => !state.find((stateItem) => stateItem.cid == item.cid)
+        );
+        return [...addArrOld, ...state];
+      case "addNew":
+        const addArrNew = action.payload.filter(
+          (item) => !state.find((stateItem) => stateItem.cid == item.cid)
+        );
+        return [...state, ...addArrNew];
+      case "remove":
+        return state.filter(
+          (item) =>
+            !action.payload.find((nestedItem) => nestedItem.cid == item.cid)
+        );
+      case "reset":
+        return [];
+    }
+  };
+
+  const [searchResults, dispatchSearchResults] = useReducer(reducer, []);
 
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -43,7 +75,9 @@ export default function Page() {
       alert(`${t("Search.Errors.error")}: ${JSON.stringify(error)}`);
     }
 
-    console.log("searched!: ", data);
+    if (!!data) {
+      dispatchSearchResults({ type: "set", payload: JSON.parse(data) });
+    }
   }, [data, error, isValidating, t]);
 
   const onClickSearch = () => {
@@ -67,6 +101,14 @@ export default function Page() {
         onChangeSearch={onChangeSearch}
         onClickSearch={onClickSearch}
       />
+      <Spacer y={0.5} />
+      <Grid.Container gap={1} justify="center">
+        {searchResults.map((item) => (
+          <Grid key={item.cid} xs={12}>
+            <SearchResultComp searchResult={item} />
+          </Grid>
+        ))}
+      </Grid.Container>
     </>
   );
 }

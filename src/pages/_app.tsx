@@ -7,6 +7,7 @@ import { createTheme, NextUIProvider, useTheme } from "@nextui-org/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { IconContext } from "react-icons";
 import { ProSidebarProvider } from "react-pro-sidebar";
+import BskyAgentsContextProvider from "@/contexts/BskyAgents";
 
 function App({ Component, pageProps }: AppProps) {
   const lightTheme = createTheme({
@@ -53,9 +54,11 @@ function App({ Component, pageProps }: AppProps) {
           }}
         >
           <ProSidebarProvider>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
+            <BskyAgentsContextProvider>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </BskyAgentsContextProvider>
           </ProSidebarProvider>
         </IconContext.Provider>
       </NextUIProvider>

@@ -26,9 +26,15 @@ export default function Layout({ children }: Props) {
   const [width, height] = useWindowSize();
 
   return (
-    <Row style={{ height: height }}>
-      {width >= 900 ? <MySidebar height={height} /> : null}
-      <main style={{ width: width }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        flex: 1,
+      }}
+    >
+      {width >= 900 ? <MySidebar /> : null}
+      <main>
         {width < 900 ? <Navbar /> : null}
         <Container
           justify="center"
@@ -37,6 +43,6 @@ export default function Layout({ children }: Props) {
           {children}
         </Container>
       </main>
-    </Row>
+    </div>
   );
 }

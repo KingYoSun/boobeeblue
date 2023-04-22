@@ -6,6 +6,7 @@ const nextConfig = {
   i18n,
   env: {
     BGS_BASE_URL: process.env.BGS_BASE_URL,
+    BSKY_AGENT_HOSTS: process.env.BSKY_AGENT_HOSTS,
   },
 };
 
