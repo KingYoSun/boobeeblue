@@ -13,7 +13,11 @@ type Action = {
   payload: Array<SearchResult>;
 };
 
-export default function Page() {
+interface Props {
+  locale: any;
+}
+
+export default function Page({ locale }: Props) {
   const { t } = useTranslation("common");
 
   const reducer = (state: Array<SearchResult>, action: Action) => {
@@ -105,7 +109,7 @@ export default function Page() {
       <Grid.Container gap={1} justify="center">
         {searchResults.map((item) => (
           <Grid key={item.cid} xs={12}>
-            <SearchResultComp searchResult={item} />
+            <SearchResultComp searchResult={item} locale={locale} />
           </Grid>
         ))}
       </Grid.Container>
@@ -116,5 +120,6 @@ export default function Page() {
 export const getStaticProps: GetStaticProps = async ({ locale }: any) => ({
   props: {
     ...(await serverSideTranslations(locale, ["common"])),
+    locale,
   },
 });

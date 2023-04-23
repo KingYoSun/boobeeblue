@@ -1,8 +1,8 @@
-import { Card, Text, User, Badge, Image } from "@nextui-org/react";
-import { useState, useContext, useEffect, useCallback } from "react";
+import { Card, Text, User, Badge } from "@nextui-org/react";
+import { useState, useContext, useCallback } from "react";
 import { BskyAgentsContext } from "@/contexts/BskyAgents";
-import { Record as FeedRecord } from "@atproto/api/dist/client/types/app/bsky/feed/post";
-import { ProfileViewDetailed } from "@atproto/api/dist/client/types/app/bsky/actor/defs";
+import { AppBskyFeedDefs } from "@atproto/api";
+import moment from "moment";
 
 type FacetFeature = {
   $type: "app.bsky.richtext.facet#mention" | "app.bsky.richtext.facet#link";
@@ -74,63 +74,51 @@ export type SearchResult = {
 
 interface Props {
   searchResult: SearchResult;
+  locale?: any;
 }
 
-export default function SearchResultComp({ searchResult }: Props) {
-  //console.log(searchResult);
+export interface ThreadDataSchema {
+  thread:
+    | AppBskyFeedDefs.ThreadViewPost
+    | AppBskyFeedDefs.NotFoundPost
+    | { $type: string; [k: string]: unknown };
+  [k: string]: unknown;
+}
+
+export default function SearchResultComp({ searchResult, locale }: Props) {
   const { agents, dispatchAgent } = useContext(BskyAgentsContext);
+
   const PDSs = agents.map((agent) => agent.url);
   const pdsUrl = PDSs[searchResult.user.PDS - 1];
   const agent = agents.find((item) => item.url == pdsUrl);
 
-  const [post, setPost] = useState<FeedRecord | undefined>(undefined);
-  const [user, setUser] = useState<ProfileViewDetailed | undefined>(undefined);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [data, setData] = useState<ThreadDataSchema | undefined>(undefined);
 
-  const getPost = useCallback(
+  // Authentication Required
+  const getPostThread = useCallback(
     async (searchResult: SearchResult) => {
       const queryParams = {
-        /** The handle or DID of the repo. */
-        repo: searchResult.user.Did,
-        /** The NSID of the record collection. */
-        collection: "app.bsky.feed.post",
-        /** The key of the record. */
-        rkey: searchResult.tid.replace("app.bsky.feed.post/", ""),
-        /** The CID of the version of the record. If not specified, then return the most recent version. */
-        cid: searchResult.cid,
+        uri: `at://${searchResult.user.Did}/$${searchResult.tid}`,
+        depth: 0,
       };
       let res;
       try {
-        res = await agent?.client.getPost(queryParams);
+        res = await agent?.client.getPostThread(queryParams);
       } catch (error) {
         console.log(pdsUrl, error);
       } finally {
         // console.log("response post!: ", res, agent?.url);
-        setPost(res?.value);
+        setData(res?.data);
       }
     },
     [agent?.client, pdsUrl]
   );
 
-  // Authenication Required
-  async function getUser(searchResult: SearchResult) {
-    const queryParams = {
-      actor: searchResult.user.Did,
-    };
-    let res;
-    try {
-      res = await agent?.client.getProfile(queryParams);
-    } catch (error) {
-      console.log(pdsUrl, error);
-    } finally {
-      console.log("response profile!: ", res, agent?.url);
-      // setUser(res?.data);
-    }
-  }
-
+  /*
   useEffect(() => {
-    (async () => await Promise.all([getPost(searchResult)]))();
-  }, [getPost, searchResult]);
+    (async () => await Promise.all([getPostThread(searchResult)]))();
+  }, [getPostThread, searchResult]);
+  */
 
   type BadgeColor = "primary" | "warning";
   const pdsBadgeColors: Array<BadgeColor> = ["warning", "primary"];
@@ -141,11 +129,18 @@ export default function SearchResultComp({ searchResult }: Props) {
     </Badge>
   );
 
+  const timeFromNow = (searchResult: SearchResult) => {
+    if (locale == "ja") moment.locale("ja");
+    return moment(searchResult.post.createdAt).fromNow();
+  };
+
   return (
     <Card>
       <Card.Header>
         <User src="" name={`@${searchResult.user.Handle}`} />
         {pdsText(searchResult)}
+        <Badge variant="dot" css={{ mx: "$2" }} />
+        <Text>{timeFromNow(searchResult)}</Text>
       </Card.Header>
       <Card.Body css={{ py: "$3" }}>
         <Text>{searchResult.post.text}</Text>

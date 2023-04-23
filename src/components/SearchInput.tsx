@@ -31,7 +31,6 @@ export default function MySearchInput({
           labelPlaceholder={`${t("Search.inputPlaceholder")}`}
           contentRight={loadingFlg ? <Loading /> : <MdSearch />}
           onChange={(e) => {
-            e.preventDefault();
             onChangeSearch(e);
           }}
           onKeyPress={(e) => {
