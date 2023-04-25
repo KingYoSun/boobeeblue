@@ -19,29 +19,27 @@ export default function MySearchInput({
   const { t } = useTranslation("common");
 
   return (
-    <>
-      <Row justify="center" css={{ marginTop: "$12" }}>
-        <Input
-          id="searchInput"
-          initialValue={value}
-          clearable
-          bordered
-          color="primary"
-          width="100%"
-          labelPlaceholder={`${t("Search.inputPlaceholder")}`}
-          contentRight={loadingFlg ? <Loading /> : <MdSearch />}
-          onChange={(e) => {
-            onChangeSearch(e);
-          }}
-          onKeyPress={(e) => {
-            if (e.key == "Enter") {
-              e.preventDefault();
-              onClickSearch();
-              document.getElementById("searchInput")?.blur();
-            }
-          }}
-        />
-      </Row>
-    </>
+    <Row justify="center" css={{ marginTop: "$12", width: "100%" }}>
+      <Input
+        id="searchInput"
+        initialValue={value}
+        clearable
+        bordered
+        color="primary"
+        width="100%"
+        labelPlaceholder={`${t("Search.inputPlaceholder")}`}
+        contentRight={loadingFlg ? <Loading /> : <MdSearch />}
+        onChange={(e) => {
+          onChangeSearch(e);
+        }}
+        onKeyPress={(e) => {
+          if (e.key == "Enter") {
+            e.preventDefault();
+            onClickSearch();
+            document.getElementById("searchInput")?.blur();
+          }
+        }}
+      />
+    </Row>
   );
 }

@@ -1,17 +1,12 @@
 import { GetStaticProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import MySearchInput from "@/components/SearchInput";
-import React, { useCallback, useEffect, useReducer, useState } from "react";
-import { FormElement, Grid, Spacer } from "@nextui-org/react";
-import useSWR from "swr";
+import React, { useCallback, useState } from "react";
+import { FormElement, Spacer } from "@nextui-org/react";
 import axios, { AxiosRequestConfig } from "axios";
 import { useTranslation } from "next-i18next";
-import SearchResultComp, { SearchResult } from "@/components/SearchResult";
-
-type Action = {
-  type: "set" | "addOld" | "addNew" | "remove" | "reset";
-  payload: Array<SearchResult>;
-};
+import Timeline from "@/components/Timeline";
+import { SearchResult } from "@/components/SearchResult";
 
 interface Props {
   locale: any;
@@ -20,69 +15,39 @@ interface Props {
 export default function Page({ locale }: Props) {
   const { t } = useTranslation("common");
 
-  const reducer = (state: Array<SearchResult>, action: Action) => {
-    switch (action?.type) {
-      case "set":
-        return action.payload;
-      case "addOld":
-        const addArrOld = action.payload.filter(
-          (item) => !state.find((stateItem) => stateItem.cid == item.cid)
-        );
-        return [...addArrOld, ...state];
-      case "addNew":
-        const addArrNew = action.payload.filter(
-          (item) => !state.find((stateItem) => stateItem.cid == item.cid)
-        );
-        return [...state, ...addArrNew];
-      case "remove":
-        return state.filter(
-          (item) =>
-            !action.payload.find((nestedItem) => nestedItem.cid == item.cid)
-        );
-      case "reset":
-        return [];
-    }
-  };
-
-  const [searchResults, dispatchSearchResults] = useReducer(reducer, []);
-
+  const [items, setItems] = useState<Array<SearchResult>>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [offset, setOffset] = useState(0);
   const bgsBaseUrl = process.env.BGS_BASE_URL;
+  const searchUrl = "/meili/search";
 
-  const fetcher = (url: string) => {
+  // TODO: axios to ky
+  const fetcher = async (url: string) => {
     const config: AxiosRequestConfig = {
       baseURL: bgsBaseUrl,
       params: {
         q: input,
+        o: offset,
       },
     };
-    return axios.get(url, config).then((res) => res.data);
+    setLoading(true);
+    await axios.get(url, config).then((res) => {
+      const data = JSON.parse(res.data);
+      console.log("data!: ", data.length, data);
+      const addNewItems = data.filter(
+        (post: SearchResult) =>
+          items.length == 0 || !items.find((item) => item.cid == post.cid)
+      );
+      setOffset(offset + addNewItems.length);
+      setItems([...items, ...addNewItems]);
+      setLoading(false);
+    });
   };
-  const { data, mutate, error, isValidating } = useSWR(
-    "/meili/search",
-    fetcher
-  );
 
   const onChangeSearch = useCallback((e: React.ChangeEvent<FormElement>) => {
     setInput(e.target.value);
   }, []);
-
-  useEffect(() => {
-    if (isValidating) {
-      setLoading(true);
-    } else {
-      setLoading(false);
-    }
-
-    if (!!error) {
-      alert(`${t("Search.Errors.error")}: ${JSON.stringify(error)}`);
-    }
-
-    if (!!data) {
-      dispatchSearchResults({ type: "set", payload: JSON.parse(data) });
-    }
-  }, [data, error, isValidating, t]);
 
   const onClickSearch = () => {
     if (!bgsBaseUrl) {
@@ -91,9 +56,12 @@ export default function Page({ locale }: Props) {
       return;
     }
 
-    mutate();
+    setOffset(0);
+    setItems([]);
 
     console.log(`search search!: ${input}`);
+
+    fetcher(searchUrl);
     return null;
   };
 
@@ -106,13 +74,11 @@ export default function Page({ locale }: Props) {
         onClickSearch={onClickSearch}
       />
       <Spacer y={0.5} />
-      <Grid.Container gap={1} justify="center">
-        {searchResults.map((item) => (
-          <Grid key={item.cid} xs={12}>
-            <SearchResultComp searchResult={item} locale={locale} />
-          </Grid>
-        ))}
-      </Grid.Container>
+      <Timeline
+        items={items}
+        loadNextPage={() => fetcher(searchUrl)}
+        locale={locale}
+      />
     </>
   );
 }

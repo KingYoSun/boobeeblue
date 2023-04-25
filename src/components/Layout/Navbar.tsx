@@ -3,7 +3,7 @@ import NavHome from "../navigations/Home";
 import NavNotifications from "../navigations/Notifications";
 import { Navbar, useTheme } from "@nextui-org/react";
 import { useRouter } from "next/router";
-import { ReactNode, useState } from "react";
+import { MutableRefObject, ReactNode, useState } from "react";
 import BooBee from "../BooBee";
 import NavSearch from "../navigations/Search";
 import NavProfile from "../navigations/Profile";

@@ -1,8 +1,10 @@
 import { Card, Text, User, Badge } from "@nextui-org/react";
-import { useState, useContext, useCallback } from "react";
+import React, { useState, useContext, useCallback } from "react";
 import { BskyAgentsContext } from "@/contexts/BskyAgents";
 import { AppBskyFeedDefs } from "@atproto/api";
 import moment from "moment";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 type FacetFeature = {
   $type: "app.bsky.richtext.facet#mention" | "app.bsky.richtext.facet#link";
@@ -75,6 +77,7 @@ export type SearchResult = {
 interface Props {
   searchResult: SearchResult;
   locale?: any;
+  style?: any;
 }
 
 export interface ThreadDataSchema {
@@ -85,12 +88,17 @@ export interface ThreadDataSchema {
   [k: string]: unknown;
 }
 
-export default function SearchResultComp({ searchResult, locale }: Props) {
+export default function SearchResultComp({
+  searchResult,
+  locale,
+  style,
+}: Props) {
   const { agents, dispatchAgent } = useContext(BskyAgentsContext);
 
   const PDSs = agents.map((agent) => agent.url);
   const pdsUrl = PDSs[searchResult.user.PDS - 1];
   const agent = agents.find((item) => item.url == pdsUrl);
+  const [loaded, setLoaded] = useState(true);
 
   const [data, setData] = useState<ThreadDataSchema | undefined>(undefined);
 
@@ -135,16 +143,40 @@ export default function SearchResultComp({ searchResult, locale }: Props) {
   };
 
   return (
-    <Card>
-      <Card.Header>
-        <User src="" name={`@${searchResult.user.Handle}`} />
-        {pdsText(searchResult)}
-        <Badge variant="dot" css={{ mx: "$2" }} />
-        <Text>{timeFromNow(searchResult)}</Text>
-      </Card.Header>
-      <Card.Body css={{ py: "$3" }}>
-        <Text>{searchResult.post.text}</Text>
-      </Card.Body>
-    </Card>
+    <div
+      style={{
+        paddingTop: 10,
+        paddingBottom: 10,
+        ...style,
+      }}
+    >
+      <Card variant="bordered">
+        {loaded ? (
+          <Card.Header>
+            <User src="" name={`@${searchResult.user.Handle}`} />
+            {pdsText(searchResult)}
+            <Badge variant="dot" css={{ mx: "$2" }} />
+            <Text>{timeFromNow(searchResult)}</Text>
+          </Card.Header>
+        ) : (
+          <Card.Header>
+            <Skeleton circle containerClassName="avatar-skeleton" />
+            <Skeleton width={150} style={{ marginLeft: "5px" }} />
+            <Skeleton width={100} style={{ marginLeft: "3px" }} />
+            <Badge variant="dot" css={{ mx: "$2" }} />
+            <Skeleton width={70} />
+          </Card.Header>
+        )}
+        {loaded ? (
+          <Card.Body css={{ py: "$3" }}>
+            <Text>{searchResult.post.text}</Text>
+          </Card.Body>
+        ) : (
+          <Card.Body css={{ py: "$3" }}>
+            <Skeleton width="100%" count={3} />
+          </Card.Body>
+        )}
+      </Card>
+    </div>
   );
 }

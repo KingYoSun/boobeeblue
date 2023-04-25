@@ -1,7 +1,13 @@
-import { Container, Row } from "@nextui-org/react";
+import { Container } from "@nextui-org/react";
 import Navbar from "./Navbar";
 import MySidebar from "./Sidebar";
-import React, { useEffect, useState, ReactNode } from "react";
+import React, {
+  useEffect,
+  useState,
+  ReactNode,
+  useRef,
+  useCallback,
+} from "react";
 
 type Props = {
   children: ReactNode;
@@ -26,23 +32,24 @@ export default function Layout({ children }: Props) {
   const [width, height] = useWindowSize();
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        flex: 1,
-      }}
+    <Container
+      display="flex"
+      justify="center"
+      alignContent="flex-start"
+      responsive
+      css={{ height: "100%" }}
     >
-      {width >= 900 ? <MySidebar /> : null}
-      <main>
-        {width < 900 ? <Navbar /> : null}
-        <Container
-          justify="center"
-          css={{ paddingTop: "$lg", paddingBottom: "$xl" }}
-        >
-          {children}
-        </Container>
-      </main>
-    </div>
+      <Navbar />
+      <div
+        style={{
+          height: "90%",
+          width: "95%",
+          paddingTop: "2vh",
+          paddingBottom: "5vh",
+        }}
+      >
+        {children}
+      </div>
+    </Container>
   );
 }
