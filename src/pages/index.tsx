@@ -1,29 +1,78 @@
 import { GetStaticProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import MySearchInput from "@/components/SearchInput";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState, useReducer } from "react";
 import { FormElement, Spacer } from "@nextui-org/react";
 import axios, { AxiosRequestConfig } from "axios";
 import { useTranslation } from "next-i18next";
 import Timeline from "@/components/Timeline";
 import { SearchResult } from "@/components/SearchResult";
+import useSWR from "swr";
 
 interface Props {
   locale: any;
 }
 
+type ActionType = "set" | "addNew" | "remove" | "reset" | "none";
+
+type Action = {
+  type: ActionType;
+  payload: Array<SearchResult>;
+};
+
+interface FetcherProps {
+  type: ActionType;
+  url: string;
+}
+
+interface FetcherReturn {
+  type: ActionType;
+  json: string;
+}
+
 export default function Page({ locale }: Props) {
   const { t } = useTranslation("common");
 
-  const [items, setItems] = useState<Array<SearchResult>>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [offset, setOffset] = useState(0);
+
+  const reducer = (state: Array<SearchResult>, action: Action) => {
+    switch (action?.type) {
+      case "set":
+        setOffset(action.payload.length);
+        return [...action.payload];
+      case "addNew":
+        const addArrNew = action.payload.filter(
+          (item) => !state.find((stateItem) => stateItem.cid == item.cid)
+        );
+        setOffset(offset + addArrNew.length);
+        return [...state, ...addArrNew];
+      case "remove":
+        return state.filter(
+          (item) =>
+            !action.payload.find((nestedItem) => nestedItem.cid == item.cid)
+        );
+      case "reset":
+        setOffset(0);
+        return [];
+      case "none":
+        return state;
+    }
+  };
+
+  const [items, dispatchItems] = useReducer(reducer, []);
+
   const bgsBaseUrl = process.env.BGS_BASE_URL;
   const searchUrl = "/meili/search";
 
   // TODO: axios to ky
-  const fetcher = async (url: string) => {
+  const fetcher = ({ type, url }: FetcherProps): Promise<FetcherReturn> => {
+    if (type == "none")
+      return Promise.resolve({
+        type,
+        json: "",
+      });
     const config: AxiosRequestConfig = {
       baseURL: bgsBaseUrl,
       params: {
@@ -31,23 +80,37 @@ export default function Page({ locale }: Props) {
         o: offset,
       },
     };
-    setLoading(true);
-    await axios.get(url, config).then((res) => {
-      const data = JSON.parse(res.data);
-      console.log("data!: ", data.length, data);
-      const addNewItems = data.filter(
-        (post: SearchResult) =>
-          items.length == 0 || !items.find((item) => item.cid == post.cid)
-      );
-      setOffset(offset + addNewItems.length);
-      setItems([...items, ...addNewItems]);
-      setLoading(false);
+    return axios.get(url, config).then((res) => {
+      return {
+        type,
+        json: res.data,
+      };
     });
   };
+
+  const { data, mutate, error, isValidating } = useSWR(
+    { type: "none", url: searchUrl },
+    fetcher
+  );
 
   const onChangeSearch = useCallback((e: React.ChangeEvent<FormElement>) => {
     setInput(e.target.value);
   }, []);
+
+  useEffect(() => {
+    if (isValidating) {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+
+    if (!!error) {
+      alert(`${t("Search.Errors.error")}: ${JSON.stringify(error)}`);
+    }
+
+    if (!!data?.json && !!data?.type)
+      dispatchItems({ type: data.type, payload: JSON.parse(data.json) });
+  }, [data, error, isValidating, t]);
 
   const onClickSearch = () => {
     if (!bgsBaseUrl) {
@@ -56,12 +119,8 @@ export default function Page({ locale }: Props) {
       return;
     }
 
-    setOffset(0);
-    setItems([]);
-
     console.log(`search search!: ${input}`);
-
-    fetcher(searchUrl);
+    mutate(fetcher({ type: "set", url: searchUrl }));
     return null;
   };
 
@@ -76,7 +135,7 @@ export default function Page({ locale }: Props) {
       <Spacer y={0.5} />
       <Timeline
         items={items}
-        loadNextPage={() => fetcher(searchUrl)}
+        loadNextPage={() => mutate(fetcher({ type: "addNew", url: searchUrl }))}
         locale={locale}
       />
     </>
