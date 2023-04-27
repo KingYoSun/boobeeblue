@@ -63,8 +63,8 @@ export default function Page({ locale }: Props) {
 
   const [items, dispatchItems] = useReducer(reducer, []);
 
-  const bgsBaseUrl = process.env.BGS_BASE_URL;
-  const searchUrl = "/meili/search";
+  const bgsBaseUrl = process.env.BGS_BASE_URL || "http://localhost:2470";
+  const searchUrl = process.env.BGS_SEARCH_ENDPOINT || "/meili/search";
 
   // TODO: axios to ky
   const fetcher = ({ type, url }: FetcherProps): Promise<FetcherReturn> => {

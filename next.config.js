@@ -7,6 +7,7 @@ const nextConfig = {
   env: {
     BGS_BASE_URL: process.env.BGS_BASE_URL,
     BSKY_AGENT_HOSTS: process.env.BSKY_AGENT_HOSTS,
+    BGS_SEARCH_ENDPOINT: process.env.BGS_SEARCH_ENDPOINT,
   },
 };
 
