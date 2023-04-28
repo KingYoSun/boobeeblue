@@ -100,6 +100,10 @@ export default function SearchResultComp({
   const agent = agents.find((item) => item.url == pdsUrl);
   const [loaded, setLoaded] = useState(true);
 
+  const stagingUrl = `https://staging.bsky.app/profile/${
+    searchResult.user.Handle
+  }/post/${searchResult.tid.replace("app.bsky.feed.post/", "")}`;
+
   const [data, setData] = useState<ThreadDataSchema | undefined>(undefined);
 
   // Authentication Required
@@ -150,7 +154,14 @@ export default function SearchResultComp({
         ...style,
       }}
     >
-      <Card variant="bordered">
+      <Card
+        variant="bordered"
+        isHoverable
+        isPressable
+        onClick={() => {
+          window.open(stagingUrl, "_blank");
+        }}
+      >
         {loaded ? (
           <Card.Header>
             <User src="" name={`@${searchResult.user.Handle}`} />
