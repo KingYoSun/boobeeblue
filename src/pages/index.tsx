@@ -27,7 +27,7 @@ interface FetcherProps {
 
 interface FetcherReturn {
   type: ActionType;
-  json: string;
+  json: Array<SearchResult>;
 }
 
 export default function Page({ locale }: Props) {
@@ -71,7 +71,7 @@ export default function Page({ locale }: Props) {
     if (type == "none")
       return Promise.resolve({
         type,
-        json: "",
+        json: [],
       });
     const config: AxiosRequestConfig = {
       baseURL: bgsBaseUrl,
@@ -109,7 +109,7 @@ export default function Page({ locale }: Props) {
     }
 
     if (!!data?.json && !!data?.type)
-      dispatchItems({ type: data.type, payload: JSON.parse(data.json) });
+      dispatchItems({ type: data.type, payload: data.json });
   }, [data, error, isValidating, t]);
 
   const onClickSearch = () => {
